@@ -10,27 +10,18 @@ const CERTAIN_FILE_CONTENT_BEFORE = `I love to say hello
 to the world
 `;
 
-const CERTAIN_FILE_CONTENT_AFTER = `I love to say hello
-
-to you
-`;
-
-Given("a project with a certain file", (p: Project, world) => {
+Given("a project with a source file", (p: Project, world) => {
     p.addFile(CERTAIN_INPUT_FILEPATH, CERTAIN_FILE_CONTENT_BEFORE);
 });
 
-When("the DefineLibbit is run", (p: Project, world) => {
+When("the DefineLibbit is run with name (.*)", (p: Project, world, name: string) => {
     const w = world as ProjectScenarioWorld;
     const editor = w.editor("DefineLibbit");
-    w.editWith(editor, { inputParameter: "you" });
+    w.editWith(editor, { name, sourceFile: CERTAIN_INPUT_FILEPATH });
 });
 
-Then("that certain file looks different", (p: Project, world) => {
+Then("the (.*)Libbit editor exists", (p: Project, world, name: string) => {
     const w = world as ProjectScenarioWorld;
-    const after = p.findFile(CERTAIN_INPUT_FILEPATH).content;
-    const passing = (after === CERTAIN_FILE_CONTENT_AFTER);
-    if (!passing) {
-        console.log(`FAILURE: ${CERTAIN_INPUT_FILEPATH} --->\n${after}\n<---`);
-    }
-    return passing;
+    console.log(p.files.forEach((f) => console.log("file: " + f.path)))
+    return p.fileExists(`.atomist/editors/libbit/${name}.ts`);
 });

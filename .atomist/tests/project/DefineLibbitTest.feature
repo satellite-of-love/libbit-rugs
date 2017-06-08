@@ -5,8 +5,10 @@ Feature: Make sure the sample TypeScript Editor has some tests
 
 
   Scenario: DefineLibbit should edit a project correctly
-    Given a project with a certain file
-    When the DefineLibbit is run
+    Given a project with a source file
+    When the DefineLibbit is run with name Yes
     Then parameters were valid
     Then changes were made
-    Then that certain file looks different
+    Then the YesLibbit editor exists
+    Then the YesLibbit features file exists
+    Then the YesLibbit steps file exists
