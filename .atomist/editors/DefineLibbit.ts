@@ -44,33 +44,49 @@ export class DefineLibbit implements EditProject {
 
         // TODO: extract this project's group and artifact from package.json
 
-        const libbitFilepath = ".atomist/editors/libbit/" + this.name + ".ts";
-
         if (!project.fileExists(this.sourceFile)) {
             throw new Error(`The source file ${this.sourceFile} does not exist`);
         }
 
+        const testFiles = this.detectTests(project, this.sourceFile);
+        const libbitFile = this.copySampleLibbit(project, this.name);
+        this.modifySampleLibbit(libbitFile, this.name, this.sourceFile, testFiles);
+    }
+
+    private detectTests(project: Project, sourceFile: string): string[] {
+        const testPrefix = sourceFile.
+            replace(/\/main\//, "/test/").
+            replace(/\.[^\.]*$/, ""); // strip the file suffix
+        const testFilepaths = project.files.
+            filter((f) => f.path.indexOf(testPrefix) === 0). // startsWith
+            map((f) => f.path);
+        return testFilepaths;
+    }
+
+    private copySampleLibbit(project: Project, name: string) {
+        const libbitFilepath = ".atomist/editors/libbit/" + name + ".ts";
+
         project.copyEditorBackingFileOrFailToDestination(".atomist/editors/SampleLibbit.ts",
             libbitFilepath);
-        const certainFile = project.findFile(libbitFilepath);
+
+        return project.findFile(libbitFilepath);
+    }
+
+    private modifySampleLibbit(certainFile: File, name: string, sourceFile: string, testFiles: string[]) {
+
         let newContent = certainFile.content;
 
         newContent = newContent.
-            replace(/FEATURE/g, this.name).
-            replace(/Sample/g, this.name);
+            replace(/FEATURE/g, name).
+            replace(/Sample/g, name);
 
         // source files
         newContent = newContent.
             replace(/const sourceFiles = \[.*?\]/,
-            `const sourceFiles = [ "${this.sourceFile}" ]`);
+            `const sourceFiles = [ "${sourceFile}" ]`);
 
         { // test files
-            const testPrefix = this.sourceFile.
-                replace(/\/main\//, "/test/").
-                replace(/\.[^\.]*$/, ""); // strip the file suffix
-            const testFilepathStrings = project.files.
-                filter((f) => f.path.indexOf(testPrefix) === 0). // startsWith
-                map((f) => `"${f.path}"`);
+            const testFilepathStrings = testFiles.map((f) => `"${f}"`);
             const testFilepathArrayString = testFilepathStrings.length > 0 ?
                 `[ ${testFilepathStrings.join(", ")} ]`
                 : `[]`;
