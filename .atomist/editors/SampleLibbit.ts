@@ -12,17 +12,8 @@ export class SampleLibbit implements EditProject {
 
     public edit(project: Project) {
 
-        const sourceDir = "/src/main/java/com/jessitron/exportme";
-        const testDir = "/src/test/java/com/jessitron/exportme";
-
-        const sourceFilenames = ["SomeCode.java"];
-        const testFilenames = ["SomeTest.java"];
-
-        const sourceFiles = sourceFilenames.map((n) =>
-            sourceDir + "/" + n);
-
-        const testFiles = testFilenames.map((n) =>
-            testDir + "/" + n);
+        const sourceFiles = ["/src/main/java/com/jessitron/exportme/SomeCode.java"];
+        const testFiles = ["/src/test/java/com/jessitron/exportme/SomeTest.java"];
 
         sourceFiles.concat(testFiles).forEach((f) => {
             if (project.fileExists(f)) {
