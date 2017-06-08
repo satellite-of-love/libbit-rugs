@@ -1,7 +1,5 @@
-Feature: Make sure the sample TypeScript Editor has some tests
-  This is the sample Gherkin feature file for the BDD tests of
-  the Run this to copy FEATURE into your project.
-  Feel free to modify and extend to suit the needs of your editor.
+Feature: Lib lib libbits FEATURE
+  The Sample libbit editor copies FEATURE into your project.
 
 
   Scenario: SampleLibbit should add sample files to the project

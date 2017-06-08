@@ -49,8 +49,16 @@ export class DefineLibbit implements EditProject {
         }
 
         const testFiles = this.detectTests(project, this.sourceFile);
+
         const libbitFile = this.copySampleLibbit(project, this.name);
         this.modifySampleLibbit(libbitFile, this.name, this.sourceFile, testFiles);
+
+        const featuresFile = this.copySampleFeaturesFile(project, this.name);
+        this.modifySampleLibbit(featuresFile, this.name, this.sourceFile, testFiles);
+
+        const stepsFile = this.copySampleStepsFile(project, this.name);
+        this.modifySampleLibbit(stepsFile, this.name, this.sourceFile, testFiles);
+
     }
 
     private detectTests(project: Project, sourceFile: string): string[] {
@@ -70,6 +78,28 @@ export class DefineLibbit implements EditProject {
             libbitFilepath);
 
         return project.findFile(libbitFilepath);
+    }
+
+    private copySampleFeaturesFile(project: Project, name: string) {
+        const destination = ".atomist/tests/project/libbit/" + name + "Test.feature";
+        const source = ".atomist/tests/project/SampleLibbitTest.feature";
+
+        project.copyEditorBackingFileOrFailToDestination(
+            source,
+            destination);
+
+        return project.findFile(destination);
+    }
+
+    private copySampleStepsFile(project: Project, name: string) {
+        const destination = ".atomist/tests/project/libbit/" + name + "Steps.ts";
+        const source = ".atomist/tests/project/SampleLibbitSteps.ts";
+
+        project.copyEditorBackingFileOrFailToDestination(
+            source,
+            destination);
+
+        return project.findFile(destination);
     }
 
     private modifySampleLibbit(certainFile: File, name: string, sourceFile: string, testFiles: string[]) {

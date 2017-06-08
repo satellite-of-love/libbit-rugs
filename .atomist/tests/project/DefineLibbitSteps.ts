@@ -21,7 +21,13 @@ When("the DefineLibbit is run with name (.*)", (p: Project, world, name: string)
 });
 
 Then("the (.*)Libbit editor exists", (p: Project, world, name: string) => {
-    const w = world as ProjectScenarioWorld;
-    console.log(p.files.forEach((f) => console.log("file: " + f.path)))
     return p.fileExists(`.atomist/editors/libbit/${name}.ts`);
+});
+
+Then("the (.*)Libbit features file exists", (p: Project, world, name: string) => {
+    return p.fileExists(`.atomist/tests/project/libbit/${name}Test.feature`);
+});
+
+Then("the (.*)Libbit steps file exists", (p: Project, world, name: string) => {
+    return p.fileExists(`.atomist/tests/project/libbit/${name}Steps.ts`);
 });
