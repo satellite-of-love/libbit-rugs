@@ -9,6 +9,32 @@ This [Rug][rug] project contains Rugs for making libbits
 
 ## Rugs
 
+### DefineLibbit
+
+make a Rug editor that will copy part of your project into another
+
+#### Prerequisites
+
+Put your editor prerequisites here.
+
+#### Parameters
+
+This Rug takes following parameters.
+
+Name | Required | Default | Description
+-----|----------|---------|------------
+`inputParameter` | Yes | | Example input parameter
+
+#### Running
+
+Run this Rug as follows:
+
+```
+$ rug edit -C ../project/directory -l DefineLibbit inputParameter='some value'
+```
+
+Explain what your editor does here.
+
 ## Support
 
 General support questions should be discussed in the `#support`
