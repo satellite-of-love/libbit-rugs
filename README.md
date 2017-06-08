@@ -35,6 +35,32 @@ $ rug edit -C ../project/directory -l DefineLibbit inputParameter='some value'
 
 Explain what your editor does here.
 
+### SampleLibbit
+
+Run this to copy FEATURE into your project
+
+#### Prerequisites
+
+Put your editor prerequisites here.
+
+#### Parameters
+
+This Rug takes following parameters.
+
+Name | Required | Default | Description
+-----|----------|---------|------------
+`inputParameter` | Yes | | Example input parameter
+
+#### Running
+
+Run this Rug as follows:
+
+```
+$ rug edit -C ../project/directory -l SampleLibbit inputParameter='some value'
+```
+
+Explain what your editor does here.
+
 ## Support
 
 General support questions should be discussed in the `#support`
