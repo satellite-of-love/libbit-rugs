@@ -12,14 +12,19 @@ export class SampleLibbit implements EditProject {
 
     public edit(project: Project) {
 
-        const sourceFiles = ["/src/main/java/com/jessitron/exportme/SomeCode.java"];
-        const testFiles = ["/src/test/java/com/jessitron/exportme/SomeTest.java"];
+        const sourceFiles = ["src/main/java/com/jessitron/exportme/SomeCode.java"];
+        const testFiles = ["src/test/java/com/jessitron/exportme/SomeCodeTest.java"];
 
-        sourceFiles.concat(testFiles).forEach((f) => {
-            if (project.fileExists(f)) {
-                console.log("File ${f} already exists. Exiting");
-                return;
-            }
+        const allFiles = sourceFiles.concat(testFiles);
+
+        const alreadyExisting = allFiles.filter((f) => project.fileExists(f));
+        if (alreadyExisting.length > 0) {
+            console.log(`File ${alreadyExisting.join(" and ")} already exists. Exiting`);
+            return;
+        }
+
+
+        allFiles.forEach((f) => {
             project.copyEditorBackingFileOrFail(f);
         });
 

@@ -3,34 +3,23 @@ import {
     Given, ProjectScenarioWorld, Then, When,
 } from "@atomist/rug/test/project/Core";
 
-const CERTAIN_INPUT_FILEPATH = "hello.txt";
-
-const CERTAIN_FILE_CONTENT_BEFORE = `I love to say hello
-
-to the world
-`;
-
-const CERTAIN_FILE_CONTENT_AFTER = `I love to say hello
-
-to you
-`;
-
-Given("a project with a certain file", (p: Project, world) => {
-    p.addFile(CERTAIN_INPUT_FILEPATH, CERTAIN_FILE_CONTENT_BEFORE);
-});
+const sourceFile = "src/main/java/com/jessitron/exportme/SomeCode.java";
+const testFiles = ["src/test/java/com/jessitron/exportme/SomeCodeTest.java"];
 
 When("the SampleLibbit is run", (p: Project, world) => {
     const w = world as ProjectScenarioWorld;
     const editor = w.editor("SampleLibbit");
-    w.editWith(editor, { inputParameter: "you" });
+    w.editWith(editor);
 });
 
-Then("that certain file looks different", (p: Project, world) => {
-    const w = world as ProjectScenarioWorld;
-    const after = p.findFile(CERTAIN_INPUT_FILEPATH).content;
-    const passing = (after === CERTAIN_FILE_CONTENT_AFTER);
-    if (!passing) {
-        console.log(`FAILURE: ${CERTAIN_INPUT_FILEPATH} --->\n${after}\n<---`);
-    }
-    return passing;
+Then("the new Sample source file exists", (p: Project, world) => {
+    return p.fileExists(sourceFile);
+});
+
+Then("the new Sample test files exist", (p: Project, world) => {
+    return testFiles.every((f) => p.fileExists(f));
+});
+
+Given("the new Sample source file already exists", (p: Project) => {
+    p.addFile(sourceFile, "stuff");
 });
