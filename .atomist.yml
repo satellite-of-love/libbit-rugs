@@ -1,0 +1,14 @@
+---
+kind: "operation"
+client: "com.atomist:rug"
+version: "1.0.1-JESS"
+generator:
+  name: "NewRugProject"
+  group: "atomist"
+  artifact: "rug-rugs"
+  version: "0.32.0-20170606145959"
+  parameters:
+    - "owner": "satellite-of-love"
+    - "description": "Rugs for making libbits"
+    - "version": "0.1.0"
+
