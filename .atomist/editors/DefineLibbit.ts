@@ -62,7 +62,7 @@ export class DefineLibbit implements EditProject {
         // source files
         newContent = newContent.
             replace(/const sourceFiles = \[.*?\]/,
-            `const sourceFiles = [ ${this.sourceFile} ]`);
+            `const sourceFiles = [ "${this.sourceFile}" ]`);
 
         { // test files
             const testPrefix = this.sourceFile.
@@ -71,11 +71,13 @@ export class DefineLibbit implements EditProject {
             const testFilepathStrings = project.files.
                 filter((f) => f.path.indexOf(testPrefix) === 0). // startsWith
                 map((f) => `"${f.path}"`);
-            const testFilepathArrayString = `[ ${testFilepathStrings.join(", ")} ]`;
+            const testFilepathArrayString = testFilepathStrings.length > 0 ?
+                `[ ${testFilepathStrings.join(", ")} ]`
+                : `[]`;
 
             newContent = newContent.
                 replace(/const testFiles = \[.*?\]/,
-                `const testFiles = [ ${testFilepathStrings.join(", ")} ]`);
+                `const testFiles = ${testFilepathArrayString}`);
         }
 
         certainFile.setContent(newContent);
