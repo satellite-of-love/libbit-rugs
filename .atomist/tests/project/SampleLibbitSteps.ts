@@ -3,7 +3,7 @@ import {
     Given, ProjectScenarioWorld, Then, When,
 } from "@atomist/rug/test/project/Core";
 
-const sourceFile = "src/main/java/com/jessitron/exportme/SomeCode.java";
+const sourceFiles = ["src/main/java/com/jessitron/exportme/SomeCode.java"];
 const testFiles = ["src/test/java/com/jessitron/exportme/SomeCodeTest.java"];
 
 When("the SampleLibbit is run", (p: Project, world) => {
@@ -13,7 +13,7 @@ When("the SampleLibbit is run", (p: Project, world) => {
 });
 
 Then("the new Sample source file exists", (p: Project, world) => {
-    return p.fileExists(sourceFile);
+    return sourceFiles.every((f) => p.fileExists(f));
 });
 
 Then("the new Sample test files exist", (p: Project, world) => {
@@ -21,5 +21,5 @@ Then("the new Sample test files exist", (p: Project, world) => {
 });
 
 Given("the new Sample source file already exists", (p: Project) => {
-    p.addFile(sourceFile, "stuff");
+    p.addFile(sourceFiles[0], "stuff");
 });
