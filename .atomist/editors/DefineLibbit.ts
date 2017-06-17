@@ -3,6 +3,8 @@ import { Editor, Parameter, Tags } from "@atomist/rug/operations/Decorators";
 import { EditProject } from "@atomist/rug/operations/ProjectEditor";
 import { Pattern } from "@atomist/rug/operations/RugOperation";
 
+type SupportedProjectStructure = "maven" | "arbitrary";
+
 /**
  * Define a new libbit in your project!
  *
@@ -51,7 +53,8 @@ export class DefineLibbit implements EditProject {
             throw new Error(`The source file ${this.sourceFile} does not exist`);
         }
 
-        const testFiles = this.detectTests(project, this.sourceFile);
+        const projectStructure = this.categorize(this.sourceFile);
+        const testFiles = this.detectTests(projectStructure, project, this.sourceFile);
 
         const libbitFile = this.copySampleLibbit(project, this.name);
         this.modifySampleLibbit(libbitFile, this.name, this.sourceFile, testFiles);
@@ -64,17 +67,20 @@ export class DefineLibbit implements EditProject {
 
     }
 
-    private detectTests(project: Project, sourceFile: string): string[] {
-        const testPrefix = sourceFile.
-            replace(/\/main\//, "/test/").
-            replace(/\.[^\.]*$/, ""); // strip the file suffix
-        const testFilepaths = project.files.
-            filter((f) => f.path.indexOf(testPrefix) === 0). // startsWith
-            map((f) => f.path);
-        return testFilepaths;
+    private categorize(sourceFile: string): SupportedProjectStructure {
+        return "arbitrary";
+    }
+
+    private detectTests(projectStructure: SupportedProjectStructure, project: Project, sourceFile: string): string[] {
+        if (projectStructure === "maven") {
+            return detectMavenTests(project, sourceFile)
+        } else if (projectStructure === "arbitrary") {
+            return [];
+        }
     }
 
     private copySampleLibbit(project: Project, name: string) {
+
         const libbitFilepath = ".atomist/editors/libbit/" + name + ".ts";
 
         project.copyEditorBackingFileOrFailToDestination(".atomist/editors/SampleLibbit.ts",
@@ -131,6 +137,16 @@ export class DefineLibbit implements EditProject {
 
         certainFile.setContent(newContent);
     }
+}
+
+function detectMavenTests(project: Project, sourceFile: string): string[] {
+    const testPrefix = sourceFile.
+    replace(/\/main\//, "/test/").
+    replace(/\.[^\.]*$/, ""); // strip the file suffix
+    const testFilepaths = project.files.
+    filter((f) => f.path.indexOf(testPrefix) === 0). // startsWith
+    map((f) => f.path);
+    return testFilepaths;
 }
 
 export const defineLibbit = new DefineLibbit();
