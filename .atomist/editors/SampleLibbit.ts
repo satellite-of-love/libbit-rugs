@@ -29,6 +29,7 @@ export class SampleLibbit implements EditProject {
         });
 
         // TODO: some atomist config operation to make a link
+        // TODO: calculate and move the files to a package (if there's a 'libbit' package put them there?)
     }
 }
 

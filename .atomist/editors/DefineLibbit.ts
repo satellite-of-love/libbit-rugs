@@ -44,6 +44,9 @@ export class DefineLibbit implements EditProject {
 
         // TODO: extract this project's group and artifact from package.json
 
+        // TODO: Print a message about how to use the libbit
+        // TODO: wrap running this (plus npm install and rug install) in a shell script
+
         if (!project.fileExists(this.sourceFile)) {
             throw new Error(`The source file ${this.sourceFile} does not exist`);
         }
