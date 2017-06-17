@@ -1,9 +1,9 @@
-import { File, Project } from "@atomist/rug/model/Core";
-import { Editor, Parameter, Tags } from "@atomist/rug/operations/Decorators";
-import { EditProject } from "@atomist/rug/operations/ProjectEditor";
-import { Pattern } from "@atomist/rug/operations/RugOperation";
+import {File, Project} from "@atomist/rug/model/Core";
+import {Editor, Parameter, Tags} from "@atomist/rug/operations/Decorators";
+import {EditProject} from "@atomist/rug/operations/ProjectEditor";
+import {Pattern} from "@atomist/rug/operations/RugOperation";
 
-type SupportedProjectStructure = "maven" | "arbitrary";
+type SupportedProjectStructure = "maven" | "atomist" | "arbitrary";
 
 /**
  * Define a new libbit in your project!
@@ -68,13 +68,16 @@ export class DefineLibbit implements EditProject {
     }
 
     private categorize(sourceFile: string): SupportedProjectStructure {
-        if (sourceFile.match(/^\/?src\/main/) ) return "maven";
-        return "arbitrary";
+        if (sourceFile.match(/^\/?src\/main/)) return "maven";
+        if (sourceFile.match(/^\/?.atomist/)) return "atomist";
+        else return "arbitrary";
     }
 
     private detectTests(projectStructure: SupportedProjectStructure, project: Project, sourceFile: string): string[] {
         if (projectStructure === "maven") {
             return detectMavenTests(project, sourceFile)
+        } else if (projectStructure === "atomist") {
+            return detectRugArchiveTypeScriptTests(project, sourceFile)
         } else if (projectStructure === "arbitrary") {
             return [];
         }
@@ -116,13 +119,10 @@ export class DefineLibbit implements EditProject {
 
         let newContent = certainFile.content;
 
-        newContent = newContent.
-            replace(/FEATURE/g, name).
-            replace(/Sample/g, name);
+        newContent = newContent.replace(/FEATURE/g, name).replace(/Sample/g, name);
 
         // source files
-        newContent = newContent.
-            replace(/const sourceFiles = \[.*?\]/,
+        newContent = newContent.replace(/const sourceFiles = \[.*?\]/,
             `const sourceFiles = [ "${sourceFile}" ]`);
 
         { // test files
@@ -131,8 +131,7 @@ export class DefineLibbit implements EditProject {
                 `[ ${testFilepathStrings.join(", ")} ]`
                 : `[]`;
 
-            newContent = newContent.
-                replace(/const testFiles = \[.*?\]/,
+            newContent = newContent.replace(/const testFiles = \[.*?\]/,
                 `const testFiles = ${testFilepathArrayString}`);
         }
 
@@ -141,14 +140,22 @@ export class DefineLibbit implements EditProject {
 }
 
 function detectMavenTests(project: Project, sourceFile: string): string[] {
-    console.log("SEEDINKNG MVEN")
-    const testPrefix = sourceFile.
-    replace(/\/main\//, "/test/").
-    replace(/\.[^\.]*$/, ""); // strip the file suffix
-    const testFilepaths = project.files.
-    filter((f) => f.path.indexOf(testPrefix) === 0). // startsWith
+    const testPrefix = sourceFile.replace(/\/main\//, "/test/").replace(/\.[^\.]*$/, ""); // strip the file suffix
+    const testFilepaths = project.files.filter((f) => f.path.indexOf(testPrefix) === 0).// startsWith
     map((f) => f.path);
     return testFilepaths;
 }
 
+
+function detectRugArchiveTypeScriptTests(project: Project, sourceFile: string): string[] {
+    const testPrefix = sourceFile.replace(/.*\//, "").// strip the directories
+    replace(/\.[^\.]*$/, ""); // strip the file suffix
+    const testFiles = project.context.pathExpressionEngine.evaluate<Project, File>(
+        project, "/Directory()[@name='.atomist']/mocha/File()");
+
+    const testFilepaths =
+        testFiles.matches.filter((f) => f.name.indexOf(testPrefix) === 0). // startsWith
+        map((f) => f.path);
+    return testFilepaths;
+}
 export const defineLibbit = new DefineLibbit();
