@@ -68,6 +68,7 @@ export class DefineLibbit implements EditProject {
     }
 
     private categorize(sourceFile: string): SupportedProjectStructure {
+        if (sourceFile.match(/^\/?src\/main/) ) return "maven";
         return "arbitrary";
     }
 
@@ -140,6 +141,7 @@ export class DefineLibbit implements EditProject {
 }
 
 function detectMavenTests(project: Project, sourceFile: string): string[] {
+    console.log("SEEDINKNG MVEN")
     const testPrefix = sourceFile.
     replace(/\/main\//, "/test/").
     replace(/\.[^\.]*$/, ""); // strip the file suffix
